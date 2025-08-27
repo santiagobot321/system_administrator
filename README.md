@@ -50,9 +50,9 @@ USE administrator_system;
 
 -- Crear la tabla
 CREATE TABLE IF NOT EXISTS equipos (
-    id INT AUTO_INCREMENT PRIMARY KEY,  -- id es autoincremental
-    hostname VARCHAR(255) NOT NULL,     -- nombre del host
-    mac VARCHAR(17) NOT NULL,           -- dirección MAC (formato estándar de 17 caracteres)
-    ip VARCHAR(15) NOT NULL,            -- dirección IP (en formato IPv4)
-    estado VARCHAR(50) NOT NULL         -- estado del equipo
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    hostname VARCHAR(255) NOT NULL,     
+    mac VARCHAR(17) NOT NULL,           
+    ip VARCHAR(15) NOT NULL,            
+    estado VARCHAR(50) NOT NULL         
 );
