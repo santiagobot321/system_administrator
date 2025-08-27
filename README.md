@@ -9,6 +9,7 @@ source venv/bin/activate
 
 # Instalar dependencias de Python
 pip install fastapi uvicorn[standard] jinja2 python-multipart
+
 pip install mariadb sqlalchemy
 
 👉 Explicación:
