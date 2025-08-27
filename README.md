@@ -8,7 +8,7 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Instalar dependencias de Python
-pip install fastapi uvicorn[standard] jinja2 python-multipart
+pip install fastapi uvicorn[standard] jinja2 python-multipart passlib[bcrypt]
 
 pip install mariadb sqlalchemy
 
@@ -17,6 +17,7 @@ pip install mariadb sqlalchemy
 fastapi → framework principal.
 
 uvicorn[standard] → servidor ASGI para correr FastAPI.
+passlib[bcrypt] → para hashear y verificar contraseñas de forma segura.
 
 jinja2 → renderizar templates HTML.
 
@@ -56,6 +57,19 @@ CREATE TABLE IF NOT EXISTS equipos (
     ip VARCHAR(15) NOT NULL,            
     estado VARCHAR(50) NOT NULL         
 );
+
+-- Crear la tabla de usuarios
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL
+);
+
+
+Crear el primer usuario administrador
+
+python3 scripts/create_admin.py
+
 
 
 uvicorn backend.main:app --reload
