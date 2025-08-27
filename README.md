@@ -56,3 +56,6 @@ CREATE TABLE IF NOT EXISTS equipos (
     ip VARCHAR(15) NOT NULL,            
     estado VARCHAR(50) NOT NULL         
 );
+
+
+uvicorn backend.main:app --reload
