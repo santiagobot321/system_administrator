@@ -2,7 +2,9 @@
 Para que tu app funcione bien, necesitas instalar:
 # Crear y activar entorno virtual
 sudo apt install python3.12-venv -y
+
 python3 -m venv venv
+
 source venv/bin/activate
 
 # Instalar dependencias de Python
