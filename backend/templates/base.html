@@ -2,8 +2,19 @@
 <html>
 <head>
     <title>Administrador de PCs</title>
+      <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+
+        <header class="topbar">
+        <h2>RIWI Manager</h2>
+        <nav>
+            <a href="/">Network</a>
+            <a href="./reportes">Reportes</a>
+            <a href="/logout">Cerrar sesión</a>
+        </nav>
+    </header>
+        <main class="main"></main>
     <h1>Lista de Equipos</h1>
     <form action="/add" method="post">
         <input type="text" name="hostname" placeholder="Hostname" required>
@@ -12,7 +23,7 @@
         <button type="submit">Agregar</button>
     </form>
 
-    <table border="1" cellpadding="5">
+    <table>
         <tr>
             <th>ID</th><th>Hostname</th><th>MAC</th><th>IP</th><th>Estado</th><th>Acciones</th>
         </tr>
@@ -31,5 +42,6 @@
         </tr>
         {% endfor %}
     </table>
+    </main>
 </body>
 </html>
