@@ -33,7 +33,9 @@ Instalar MariaDB (si no lo hiciste):
 
 
 sudo apt install mariadb-server mariadb-client -y
+
 sudo systemctl start mariadb
+
 sudo systemctl enable mariadb
 
 
