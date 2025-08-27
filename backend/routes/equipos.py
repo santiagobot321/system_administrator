@@ -1,11 +1,50 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
 from backend.db import get_connection
 import subprocess
 
 router = APIRouter()
 templates = Jinja2Templates(directory="backend/templates")
+
+class EstadoEquipo(BaseModel):
+    hostname: str
+    ip: str
+    red: bool
+    internet: bool
+
+@router.post("/report")
+def recibir_estado(estado: EstadoEquipo):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE equipos SET estado=%s, conectado=%s WHERE hostname=%s
+    """, (
+        f"Red: {estado.red}, Internet: {estado.internet}",
+        estado.red and estado.internet,
+        estado.hostname
+    ))
+    conn.commit()
+    conn.close()
+    return {"msg": "Estado recibido"}
+
+class ErrorReport(BaseModel):
+    hostname: str
+    error: str
+
+@router.post("/error")
+def recibir_error(error: ErrorReport):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE equipos SET error=%s WHERE hostname=%s
+    """, (error.error, error.hostname))
+    conn.commit()
+    conn.close()
+    return {"msg": "Error recibido"}
+
+
 
 # --- Listar equipos ---
 @router.get("/")
