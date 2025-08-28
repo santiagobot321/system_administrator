@@ -10,38 +10,38 @@
         <h2>RIWI Manager</h2>
         <nav>
             <a href="/">Network</a>
-            <a href="./reportes">Reportes</a>
+            <a href="/reportes">Reportes</a>
             <a href="/logout">Cerrar sesión</a>
         </nav>
     </header>
-        <main class="main"></main>
-    <h1>Lista de Equipos</h1>
-    <form action="/add" method="post">
-        <input type="text" name="hostname" placeholder="Hostname" required>
-        <input type="text" name="mac" placeholder="MAC" required>
-        <input type="text" name="ip" placeholder="IP" required>
-        <button type="submit">Agregar</button>
-    </form>
-
-    <table>
-        <tr>
-            <th>ID</th><th>Hostname</th><th>MAC</th><th>IP</th><th>Estado</th><th>Acciones</th>
-        </tr>
-        {% for e in equipos %}
-        <tr>
-            <td>{{ e[0] }}</td>
-            <td>{{ e[1] }}</td>
-            <td>{{ e[2] }}</td>
-            <td>{{ e[3] }}</td>
-            <td>{{ e[4] }}</td>
-            <td>
-                <a href="/encender/{{ e[2] }}">Encender</a> |
-                <a href="/apagar/{{ e[3] }}">Apagar</a> |
-                <a href="/delete/{{ e[0] }}">Eliminar</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+    <main class="main">
+        <h1>Lista de Equipos</h1>
+        <form action="/add" method="post">
+            <input type="text" name="hostname" placeholder="Hostname" required>
+            <input type="text" name="mac" placeholder="MAC" required>
+            <input type="text" name="ip" placeholder="IP" required>
+            <button type="submit">Agregar</button>
+        </form>
+    
+        <table>
+            <tr>
+                <th>ID</th><th>Hostname</th><th>MAC</th><th>IP</th><th>Estado</th><th>Acciones</th>
+            </tr>
+            {% for e in equipos %}
+            <tr>
+                <td>{{ e[0] }}</td>
+                <td>{{ e[1] }}</td>
+                <td>{{ e[2] }}</td>
+                <td>{{ e[3] }}</td>
+                <td>{{ e[4] }}</td>
+                <td>
+                    <a href="/encender/{{ e[2] }}">Encender</a> |
+                    <a href="/apagar/{{ e[3] }}">Apagar</a> |
+                    <a href="/delete/{{ e[0] }}">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
     </main>
 </body>
 </html>
