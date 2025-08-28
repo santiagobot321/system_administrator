@@ -1,17 +1,31 @@
-# Archivos de Python
+# --- Python ---
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Entorno virtual
-venv/
-.venv/
-
-# Archivos de configuración locales
-*.env
+*.db
 *.sqlite3
 
-# Archivos de sistema
+# --- Entorno virtual ---
+venv/
+.env/
+.venv/
+env/
+ENV/
+Lib/
+Scripts/
+pyvenv.cfg
+
+# --- Archivos temporales ---
+*.log
+*.pot
+*.py[cod]
+*$py.class
+
+# --- VSCode ---
+.vscode/
+*.code-workspace
+
+# --- Archivos del sistema ---
 .DS_Store
 Thumbs.db

@@ -51,7 +51,7 @@ def recibir_error(error: ErrorReport):
 def listar_equipos(request: Request):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, hostname, mac, ip, estado FROM equipos")
+    cur.execute("SELECT id, hostname, mac, ip, estado, conectado, error FROM equipos")
     equipos = cur.fetchall()
     conn.close()
     return templates.TemplateResponse("base.html", {"request": request, "equipos": equipos})
@@ -87,3 +87,16 @@ def encender_equipo(mac: str):
 def apagar_equipo(ip: str):
     subprocess.run(["python3", "tools/host.py", ip])
     return RedirectResponse("/", status_code=303)
+
+# --- Instalar VSCode ---
+@router.get("/instalar/{ip}")
+def instalar_vscode_equipo(ip: str):
+    subprocess.run(["python3", "tools/install.py", ip])
+    return RedirectResponse("/", status_code=303)
+
+# --- Mostrar bienvenida ---
+@router.get("/bienvenida/{ip}")
+def mostrar_bienvenida(ip: str):
+    subprocess.run(["python3", "tools/install.py", ip])
+    return RedirectResponse("/", status_code=303)
+
