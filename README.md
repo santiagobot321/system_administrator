@@ -12,6 +12,8 @@ pip install fastapi uvicorn[standard] jinja2 python-multipart passlib[bcrypt] it
 
 sudo apt install libmariadb-dev
 
+sudo apt install python3.12-dev
+
 pip install mariadb sqlalchemy
 
 👉 Explicación:
