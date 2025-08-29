@@ -1,40 +1,147 @@
 import os
 import socket
+import time
+import requests
+import threading
+import subprocess
+import sys
 
-"Create a function that shutdown a PC"
+sys.stdout.reconfigure(line_buffering=True)
+sys.stderr.reconfigure(line_buffering=True)
 
-def shutdown_pc ():
+# 🖥️ Apagar el equipo
+def shutdown_pc():
+    print("Ejecutando apagado...")
+    os.system("shutdown now")  # ahora no pedirá contraseña
 
-    """shutdown local PC"""
-    os.system("shutdown now")
+def show_welcome(video_path="/home/coders/Escritorio/hola.mp4"):
+    print("🎬 Mostrando video de bienvenida...")
+
+    env = os.environ.copy()
+    env["DISPLAY"] = ":0"
+
+    if "XAUTHORITY" not in env or not os.path.exists(env.get("XAUTHORITY", "")):
+        posible_xauth = f"/run/user/{os.getuid()}/gdm/Xauthority"
+        if os.path.exists(posible_xauth):
+            env["XAUTHORITY"] = posible_xauth
+
+    try:
+        subprocess.Popen(["xdg-open", video_path], env=env)
+        print(f"✅ Video abierto: {video_path}")
+    except Exception as e:
+        print(f"❌ Error al abrir el video: {e}")
 
 
-"Create another function that listen for commands"
 
+
+def change_wallpaper(image_path="/home/michael/Vídeos/wallpaper.jpg"):
+    print("🖼️ Cambiando fondo de pantalla...")
+    subprocess.run([
+        "gsettings", "set",
+        "org.gnome.desktop.background",
+        "picture-uri",
+        f"file://{image_path}"
+    ])
+
+
+# 🛠️ Verificar e instalar snapd si es necesario
+def ensure_snapd_installed():
+    try:
+        subprocess.run("snap version", shell=True, check=True)
+        print("Snap ya está instalado.")
+    except subprocess.CalledProcessError:
+        print("Instalando snapd...")
+        subprocess.run("sudo apt update -y", shell=True, check=True)
+        subprocess.run("sudo apt install snapd -y", shell=True, check=True)
+
+# 💻 Instalar VSCode sin contraseña
+# def install_vscode():
+#     ensure_snapd_installed()
+#     print("Instalando VSCode...")
+#     try:
+#         subprocess.run("sudo snap install code --classic", shell=True, check=True)
+#         print("✅ Instalación finalizada.")
+#     except subprocess.CalledProcessError as e:
+#         print("❌ Error en la instalación:", e)
+
+# 🌐 Verificar conexión a red local
+def is_connected_to_network():
+    try:
+        socket.create_connection(("10.0.120.27", 80), timeout=2)
+        return True
+    except:
+        return False
+
+# 🌍 Verificar conexión a internet
+def is_connected_to_internet():
+    try:
+        socket.create_connection(("8.8.8.8", 53), timeout=2)
+        return True
+    except:
+        return False
+
+# 📡 Reportar estado al servidor
+def report_status(server_url="http://10.0.120.2:8000/report"):
+    while True:
+        try:
+            estado = {
+                "hostname": socket.gethostname(),
+                "ip": socket.gethostbyname(socket.gethostname()),
+                "red": is_connected_to_network(),
+                "internet": is_connected_to_internet()
+            }
+            requests.post(server_url, json=estado)
+            print("Estado reportado:", estado)
+        except Exception as e:
+            print("Error al reportar estado:", e)
+            error_data = {
+                "hostname": socket.gethostname(),
+                "error": str(e)
+            }
+            try:
+                requests.post("http://10.0.120.2:8000/error", json=error_data)
+            except:
+                print("No se pudo reportar el error al servidor.")
+        time.sleep(30)
+
+def update_system():
+    print("🔄 Actualizando sistema...")
+    try:
+        subprocess.run("sudo apt update -y", shell=True, check=True)
+        subprocess.run("sudo apt upgrade -y", shell=True, check=True)
+        print("✅ Sistema actualizado correctamente.")
+    except subprocess.CalledProcessError as e:
+        print("❌ Error durante la actualización:", e)
+
+# 📬 Manejar conexión individual
+def handle_connection(conn, addr):
+    command = conn.recv(1024).decode().strip()
+    print(f"Comando recibido de {addr}: '{command}'")
+
+    if command == "shutdown now":
+        shutdown_pc()
+    elif command == "apt upgrade":
+        update_system()
+    elif command == "show welcome":
+        show_welcome("/home/michael/Vídeos/riwwelcome (1).mp4")
+    elif command == "change wallpaper":
+        change_wallpaper()
+    else:
+        print("Comando no reconocido.")
+    conn.close()
+
+# 📡 Escuchar comandos desde el servidor
 def listen_command(port=9876):
-
-    """Listening commands from server"""
-
-    "socket.socket create a socket, AF_INET it's IPv4 and SOCK_STREAM it's TCP"
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    "bind is used to hook a specific IP and port."
     s.bind(("", port))
-    "listen converts socket into a server and 1 is the maximun number of connections allowed."
-    s.listen(1)
-    print(f"Agent listening on port {port}...")
+    s.listen(5)
+    print(f"Agente escuchando en el puerto {port}...")
 
     while True:
-
-        "Script waiting for conections"
         conn, addr = s.accept()
+        threading.Thread(target=handle_connection, args=(conn, addr), daemon=True).start()
 
-        "command is received in bytes and then translated into string"
-        command = conn.recv(1024).decode()
-        if command == "shutdown now":
-            print(f"Received shutdown command from {addr}")
-            shutdown_pc()
-        conn.close()
-
-
+# 🚀 Iniciar agente
 if __name__ == "__main__":
+    threading.Thread(target=report_status, daemon=True).start()
     listen_command()

@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Administrador de PCs</title>
-      <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
 
-        <header class="topbar">
+    <header class="topbar">
         <h2>RIWI Manager</h2>
         <nav>
             <a href="/">Network</a>
@@ -14,34 +16,61 @@
             <a href="/logout">Cerrar sesión</a>
         </nav>
     </header>
-    <main class="main">
-        <h1>Lista de Equipos</h1>
-        <form action="/add" method="post">
-            <input type="text" name="hostname" placeholder="Hostname" required>
-            <input type="text" name="mac" placeholder="MAC" required>
-            <input type="text" name="ip" placeholder="IP" required>
-            <button type="submit">Agregar</button>
-        </form>
-    
-        <table>
-            <tr>
-                <th>ID</th><th>Hostname</th><th>MAC</th><th>IP</th><th>Estado</th><th>Acciones</th>
-            </tr>
-            {% for e in equipos %}
-            <tr>
-                <td>{{ e[0] }}</td>
-                <td>{{ e[1] }}</td>
-                <td>{{ e[2] }}</td>
-                <td>{{ e[3] }}</td>
-                <td>{{ e[4] }}</td>
-                <td>
-                    <a href="/encender/{{ e[2] }}">Encender</a> |
-                    <a href="/apagar/{{ e[3] }}">Apagar</a> |
-                    <a href="/delete/{{ e[0] }}">Eliminar</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
+    <main class="main"></main>
+    <h1>Lista de Equipos</h1>
+    <form action="/add" method="post">
+        <input type="text" name="hostname" placeholder="Hostname" required>
+        <input type="text" name="mac" placeholder="MAC" required>
+        <input type="text" name="ip" placeholder="IP" required>
+        <button type="submit">Agregar</button>
+    </form>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Hostname</th>
+            <th>MAC</th>
+            <th>IP</th>
+            <th>Estado</th>
+            <th>Conectado</th>
+            <th>Error</th>
+            <th>Acciones</th>
+        </tr>
+
+        {% for e in equipos %}
+        <tr>
+            <td>{{ e[0] }}</td>
+            <td>{{ e[1] }}</td>
+            <td>{{ e[2] }}</td>
+            <td>{{ e[3] }}</td>
+            <td>{{ e[4] }}</td>
+            <td>
+                {% if e[5] %}
+                <span style="color:green;">🟢 Sí</span>
+                {% else %}
+                <span style="color:red;">🔴 No</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if e[6] %}
+                <span style="color:orange;">⚠️ {{ e[6] }}</span>
+                {% else %}
+                <span style="color:gray;">Sin errores</span>
+                {% endif %}
+            </td>
+            <td>
+            <td>
+                <a href="/encender/{{ e[2] }}">Encender</a> |
+                <a href="/apagar/{{ e[3] }}">Apagar</a> |
+                <a href="/bienvenida/{{ e[3] }}">Bienvenida</a> |
+                <a href="/delete/{{ e[0] }}">Eliminar</a>
+            </td>
+            </td>
+        </tr>
+
+        {% endfor %}
+    </table>
     </main>
 </body>
+
 </html>
