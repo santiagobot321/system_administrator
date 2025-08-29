@@ -2,11 +2,18 @@
 Para que tu app funcione bien, necesitas instalar:
 # Crear y activar entorno virtual
 sudo apt install python3.12-venv -y
+
 python3 -m venv venv
+
 source venv/bin/activate
 
 # Instalar dependencias de Python
-pip install fastapi uvicorn[standard] jinja2 python-multipart
+pip install fastapi uvicorn[standard] jinja2 python-multipart passlib[bcrypt] itsdangerous
+
+sudo apt install libmariadb-dev
+
+sudo apt install python3.12-dev
+
 pip install mariadb sqlalchemy
 
 👉 Explicación:
@@ -14,6 +21,7 @@ pip install mariadb sqlalchemy
 fastapi → framework principal.
 
 uvicorn[standard] → servidor ASGI para correr FastAPI.
+passlib[bcrypt] → para hashear y verificar contraseñas de forma segura.
 
 jinja2 → renderizar templates HTML.
 
@@ -30,7 +38,9 @@ Instalar MariaDB (si no lo hiciste):
 
 
 sudo apt install mariadb-server mariadb-client -y
+
 sudo systemctl start mariadb
+
 sudo systemctl enable mariadb
 
 
@@ -44,10 +54,29 @@ CREATE DATABASE IF NOT EXISTS administrator_system;
 USE administrator_system;
 
 -- Crear la tabla
-CREATE TABLE IF NOT EXISTS equipos (
-    id INT AUTO_INCREMENT PRIMARY KEY,  -- id es autoincremental
-    hostname VARCHAR(255) NOT NULL,     -- nombre del host
-    mac VARCHAR(17) NOT NULL,           -- dirección MAC (formato estándar de 17 caracteres)
-    ip VARCHAR(15) NOT NULL,            -- dirección IP (en formato IPv4)
-    estado VARCHAR(50) NOT NULL         -- estado del equipo
+CREATE TABLE equipos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hostname VARCHAR(100) NOT NULL,
+    mac VARCHAR(17) NOT NULL UNIQUE,
+    ip VARCHAR(15) NOT NULL UNIQUE,
+    estado VARCHAR(50),
+    conectado BOOLEAN DEFAULT FALSE,
+    error TEXT
 );
+
+
+-- Crear la tabla de usuarios
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL
+);
+
+
+Crear el primer usuario administrador
+
+python3 scripts/create_admin.py
+
+
+
+uvicorn backend.main:app --reload
