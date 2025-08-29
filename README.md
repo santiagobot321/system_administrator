@@ -54,13 +54,16 @@ CREATE DATABASE IF NOT EXISTS administrator_system;
 USE administrator_system;
 
 -- Crear la tabla
-CREATE TABLE IF NOT EXISTS equipos (
-    id INT AUTO_INCREMENT PRIMARY KEY, 
-    hostname VARCHAR(255) NOT NULL,     
-    mac VARCHAR(17) NOT NULL,           
-    ip VARCHAR(15) NOT NULL,            
-    estado VARCHAR(50) NOT NULL         
+CREATE TABLE equipos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hostname VARCHAR(100) NOT NULL,
+    mac VARCHAR(17) NOT NULL UNIQUE,
+    ip VARCHAR(15) NOT NULL UNIQUE,
+    estado VARCHAR(50),
+    conectado BOOLEAN DEFAULT FALSE,
+    error TEXT
 );
+
 
 -- Crear la tabla de usuarios
 CREATE TABLE IF NOT EXISTS users (
