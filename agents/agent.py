@@ -12,34 +12,29 @@ sys.stderr.reconfigure(line_buffering=True)
 # 🖥️ Apagar el equipo
 def shutdown_pc():
     print("Ejecutando apagado...")
-    os.system("sudo shutdown now")  # ahora no pedirá contraseña
+    os.system("shutdown now")  # ahora no pedirá contraseña
 
-def show_welcome(image_path="/home/coders/Escritorio/mia.jpeg"):
-    print("📷 Mostrando imagen de bienvenida...")
+def show_welcome(video_path="/home/coders/Escritorio/hola.mp4"):
+    print("🎬 Mostrando video de bienvenida...")
 
-    # Copiamos las variables de entorno actuales
     env = os.environ.copy()
-
-    # Forzamos DISPLAY (pantalla gráfica principal)
     env["DISPLAY"] = ":0"
 
-    # Si existe la variable XAUTHORITY, la usamos, si no intentamos con la ruta por defecto
-    if "XAUTHORITY" not in env or not os.path.exists(env["XAUTHORITY"]):
+    if "XAUTHORITY" not in env or not os.path.exists(env.get("XAUTHORITY", "")):
         posible_xauth = f"/run/user/{os.getuid()}/gdm/Xauthority"
         if os.path.exists(posible_xauth):
             env["XAUTHORITY"] = posible_xauth
 
-    # Usamos subprocess.Popen para que no bloquee
     try:
-        subprocess.Popen(["xdg-open", image_path], env=env)
-        print(f"✅ Imagen abierta: {image_path}")
+        subprocess.Popen(["xdg-open", video_path], env=env)
+        print(f"✅ Video abierto: {video_path}")
     except Exception as e:
-        print(f"❌ Error al abrir la imagen: {e}")
-show_welcome()
+        print(f"❌ Error al abrir el video: {e}")
 
 
 
-def change_wallpaper(image_path="/home/michael/Imágenes/wallpaper.jpg"):
+
+def change_wallpaper(image_path="/home/michael/Vídeos/wallpaper.jpg"):
     print("🖼️ Cambiando fondo de pantalla...")
     subprocess.run([
         "gsettings", "set",
@@ -60,14 +55,14 @@ def ensure_snapd_installed():
         subprocess.run("sudo apt install snapd -y", shell=True, check=True)
 
 # 💻 Instalar VSCode sin contraseña
-def install_vscode():
-    ensure_snapd_installed()
-    print("Instalando VSCode...")
-    try:
-        subprocess.run("sudo snap install code --classic", shell=True, check=True)
-        print("✅ Instalación finalizada.")
-    except subprocess.CalledProcessError as e:
-        print("❌ Error en la instalación:", e)
+# def install_vscode():
+#     ensure_snapd_installed()
+#     print("Instalando VSCode...")
+#     try:
+#         subprocess.run("sudo snap install code --classic", shell=True, check=True)
+#         print("✅ Instalación finalizada.")
+#     except subprocess.CalledProcessError as e:
+#         print("❌ Error en la instalación:", e)
 
 # 🌐 Verificar conexión a red local
 def is_connected_to_network():
@@ -127,10 +122,8 @@ def handle_connection(conn, addr):
         shutdown_pc()
     elif command == "apt upgrade":
         update_system()
-    elif command == "install vscode":
-        install_vscode()
     elif command == "show welcome":
-        show_welcome()
+        show_welcome("/home/michael/Vídeos/riwwelcome (1).mp4")
     elif command == "change wallpaper":
         change_wallpaper()
     else:
