@@ -4,6 +4,8 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from backend.db import get_connection
 import subprocess
+from backend.session import get_user_or_redirect
+
 
 router = APIRouter()
 templates = Jinja2Templates(directory="backend/templates")
