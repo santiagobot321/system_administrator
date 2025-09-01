@@ -3,17 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <title>RIWI Manager - Login</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="./static/style.css" />
 </head>
 <body>
   <div class="login-centro">
     <div class="login-tarjeta">
       <h1 class="marca">RIWI<span>Manager</span></h1>
-
-      {% if error %}
-      <div class="login-error">Credenciales incorrectas. Inténtalo de nuevo.</div>
-      {% endif %}
-
+      
       <form method="POST" action="/login">
         <label for="email">Correo electrónico</label>
         <input class="entrada" type="email" id="email" name="email" placeholder="tu@correo.com" required />
