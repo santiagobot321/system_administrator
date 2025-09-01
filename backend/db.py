@@ -1,5 +1,6 @@
 import mariadb
 
+
 def get_connection():
     return mariadb.connect(
         user="root",

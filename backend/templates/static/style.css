@@ -2,17 +2,19 @@
 /* ESTILOS GLOBALES Y VARIABLES         */
 /* ============================================= */
 :root {
-  --color-primario: #4f46e5; /* Morado principal */
+  --color-primario: #000000; /* Morado principal */
   --color-primario-hover: #4338ca;
   --color-fondo: #f8fafc;
-  --color-texto: #334155;
+  --color-texto: #f7f6f6;
   --color-texto-claro: #64748b;
   --color-borde: #e2e8f0;
   --color-blanco: #ffffff;
+  --color-negro: #030303;
   --color-error: #ef4444;
   --color-exito: #22c55e;
   --sombra-tarjeta: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --radio-borde: 0.5rem; /* 8px */
+  --ancho-max: 1200px;
 }
 
 /* Reseteo básico y configuración de la fuente */
@@ -27,9 +29,64 @@ body {
   color: var(--color-texto);
   background-color: var(--color-fondo);
   /* El degradado solicitado para el fondo */
-  background-image: linear-gradient(120deg, var(--color-blanco) 60%, #e0dffc 100%);
+  background-image: linear-gradient(120deg, var(--color-negro) 60%, #5b1b97 100%);
   background-attachment: fixed;
+  overflow-x: hidden;           /* evita scroll horizontal */
+  min-height: 100dvh;           /* asegura que cubra toda la altura de la ventana */
+    margin-left: 50px; /* Mismo ancho que el sidebar */
+  margin-right: 50px; 
 }
+
+
+
+
+
+/* ------- VARIABLES DE COLORES lava efecto---------------------*/
+:root {
+  --bg-base: #0a0a0a;   /* color de fondo base (negro) */
+  --lava-1: #7c3aed;    /* burbuja morado vivo */
+  --lava-2: #a78bfa;    /* burbuja lila */
+  --lava-3: #5b1b97;    /* burbuja púrpura profundo */
+}
+
+
+/*  CAPA ::BEFORE → BURBUJAS ANIMADAS lava efecto */
+body::before {
+  content: "";
+  position: fixed;      /* siempre fijo en la pantalla */
+  inset: -25vmax;       /* sobresale para que el blur no corte los bordes */
+  z-index: -1;          /* se queda detrás del contenido */
+
+  /* Gradientes radiales = burbujas de colores */
+  background:
+    radial-gradient(30vmax 30vmax at var(--x1,10%) var(--y1,20%),  
+      color-mix(in oklab, var(--lava-1) 80%, transparent) 25%, transparent 60%),
+    radial-gradient(35vmax 35vmax at var(--x2,80%) var(--y2,30%),  
+      color-mix(in oklab, var(--lava-2) 80%, transparent) 25%, transparent 60%),
+    radial-gradient(28vmax 28vmax at var(--x3,50%) var(--y3,80%),  
+      color-mix(in oklab, var(--lava-3) 85%, transparent) 25%, transparent 60%),
+    radial-gradient(22vmax 22vmax at var(--x4,30%) var(--y4,70%),  
+      color-mix(in oklab, var(--lava-1) 65%, transparent) 25%, transparent 60%),
+    /* degradado base para darle fondo */
+    linear-gradient(120deg, #000 50%, #1b0f28 100%);
+
+  /* Suavizado de bordes y más intensidad de color */
+  filter: blur(50px) saturate(120%);
+
+  /* Animación: 60 segundos, movimiento constante, loop infinito */
+  animation: lava 60s linear infinite;
+}
+
+/* Animación de las burbujas (moviendo posiciones X/Y)*/
+@keyframes lava {
+  0%   { --x1:10%; --y1:20%; --x2:80%; --y2:30%; --x3:50%; --y3:80%; --x4:30%; --y4:70%; }
+  25%  { --x1:20%; --y1:35%; --x2:70%; --y2:45%; --x3:55%; --y3:75%; --x4:40%; --y4:60%; }
+  50%  { --x1:30%; --y1:60%; --x2:65%; --y2:55%; --x3:45%; --y3:65%; --x4:55%; --y4:50%; }
+  75%  { --x1:18%; --y1:72%; --x2:78%; --y2:40%; --x3:52%; --y3:30%; --x4:35%; --y4:45%; }
+  100% { --x1:12%; --y1:25%; --x2:82%; --y2:28%; --x3:60%; --y3:85%; --x4:28%; --y4:68%; }
+}
+
+
 
 /* ============================================= */
 /* ESTILOS PÁGINA DE LOGIN           */
@@ -44,10 +101,15 @@ body {
 }
 
 .login-tarjeta {
-  background-color: var(--color-blanco);
+  background-color: var(--color-negro);
   padding: 2.5rem 2rem;
   border-radius: var(--radio-borde);
-  box-shadow: var(--sombra-tarjeta);
+  margin: 200px auto;
+  border: 1px solid #9158fc;
+  box-shadow:     0 0 2px #d6d8ee,
+    0 0 20px #600ad1,
+    0 0 10px #fdfcff,
+    0 0 20px #810ad1;;
   width: 100%;
   max-width: 400px;
   text-align: center;
@@ -62,7 +124,7 @@ body {
 
 .marca span {
   color: var(--color-texto);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .login-tarjeta form {
@@ -94,7 +156,7 @@ body {
 
 .boton {
   background-color: var(--color-primario);
-  color: var(--color-blanco);
+  color: var(--color-negro);
   border: none;
   padding: 0.875rem;
   border-radius: 0.375rem;
@@ -124,9 +186,6 @@ body {
 /* ESTILOS DEL DASHBOARD (base.html y reporte.html)        */
 /* ============================================= */
 
-/* NOTA: Para que esta maquetación funcione, asegúrate de que el <body>
-   de base.html y reporte.html NO tenga la clase "has-sidebar".
-   Usaremos el header como sidebar. */
 
 /* Convertimos el header en un panel lateral fijo */
 .topbar {
@@ -139,12 +198,22 @@ body {
   color: var(--color-blanco);
   padding: 1.5rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; 
+  margin: auto;
+    box-shadow:     0 0 2px #d6d8ee,
+    0 0 20px #600ad1,
+    0 0 10px #fdfcff,
+    0 0 20px #810ad1;;
 }
 
 .topbar h2 {
-  font-size: 1.5rem;
+  font-size: 2rem;
   margin-bottom: 2rem;
+  color: #600ad1;
+}
+.topbar h2 span {
+  color: var(--color-blanco);
+  font-weight: 500;
 }
 
 .topbar nav {
@@ -154,18 +223,26 @@ body {
 }
 
 .topbar nav a {
-  color: #c7d2fe; /* Un morado más claro para los enlaces */
+  color: #f7f8fa; /* Un morado más claro para los enlaces */
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 1.3rem;
   padding: 0.75rem 1rem;
   border-radius: 0.375rem;
   transition: background-color 0.2s, color 0.2s;
 }
 
+.topbar nav a:last-child{
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: 1.5rem;
+}
+
 .topbar nav a:hover {
   background-color: var(--color-primario-hover);
-  color: var(--color-blanco);
+  color: var(--color-negro);
 }
+
 
 /* Empujamos el contenido principal a la derecha del sidebar */
 .main,
@@ -176,11 +253,17 @@ body > table {
   padding: 2rem;
 }
 
+.agre{
+  color: white;
+  font-size: 25px;
+}
+
 /* Estilos para el título principal de las páginas del dashboard */
 body > h1 {
   font-size: 2rem;
   margin-bottom: 1.5rem;
   padding-bottom: 0; /* Ajuste para que no tenga doble padding */
+  color: #ebd1e8;
 }
 
 /* Estilos para el formulario de agregar equipo */
@@ -188,7 +271,7 @@ body > form {
   display: flex;
   gap: 1rem;
   align-items: center;
-  background-color: var(--color-blanco);
+  background-color: var(--color-negro);
   padding: 1.5rem;
   border-radius: var(--radio-borde);
   box-shadow: var(--sombra-tarjeta);
@@ -198,7 +281,7 @@ body > form {
 body > form input[type="text"] {
   flex-grow: 1;
   padding: 0.75rem;
-  border: 1px solid var(--color-borde);
+  /* border: 1px solid var(--color-borde); */
   border-radius: 0.375rem;
   font-size: 1rem;
 }
@@ -211,7 +294,7 @@ body > form input[type="text"]:focus {
 
 body > form button {
   background-color: var(--color-primario);
-  color: var(--color-blanco);
+  color: var(--color-negro);
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 0.375rem;
@@ -225,43 +308,91 @@ body > form button:hover {
   background-color: var(--color-primario-hover);
 }
 
-/* Estilos para la tabla de equipos */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: var(--color-blanco);
+/* --------------- Estilos para la tabla de equipos ----------------- /////////*/
+
+
+.cards{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+  margin-left: 250px;
+}
+
+/* ====== Tarjeta PC (cuadrado con glow) ====== */
+.card-pc{
+  background: rgba(3,3,3,.9);
   border-radius: var(--radio-borde);
-  box-shadow: var(--sombra-tarjeta);
-  overflow: hidden; /* Para que el border-radius afecte a las celdas */
+  padding: 1rem;
+  border: 1px solid #9158fc;
+  box-shadow:
+    0 0 3px #d6d8ee,
+    0 0 12px #600ad1,
+    0 0 20px #810ad1;
+  min-height: auto;         /* asegura “cuadro” */
+
+  
 }
 
-th, td {
-  padding: 1rem 1.25rem;
-  text-align: left;
-  border-bottom: 1px solid var(--color-borde);
+/* Cabecera con icono + hostname */
+.pc-head{
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: .5rem;
+}
+.pc-icon{
+  width: 108px; height: 108px; object-fit: contain;
+  filter: drop-shadow(0 0 8px #7c3aed);
+}
+.hostname{ font-size: 1.05rem; font-weight: 700; }
+
+/* Lista de datos */
+.info{
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: .3rem;
+  font-size: .92rem;
+  color: var(--color-texto);
 }
 
-th {
-  background-color: #f1f5f9; /* Un gris muy claro para los encabezados */
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-texto-claro);
+/* Pills de estado/error */
+.pill{
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .12rem .5rem; border-radius: 999px; font-size: .78rem;
+  border: 1px solid currentColor;
 }
+.pill.ok  { color:#bbf7d0; box-shadow: 0 0 8px #22c55e; }
+.pill.bad { color:#fecaca; box-shadow: 0 0 8px #ef4444; }
+.pill.warn{ color:#fde68a; box-shadow: 0 0 8px #f59e0b; }
+.pill.mute{ color:#cbd5e1; }
 
-tr:last-child td {
-  border-bottom: none;
+/* Botones de acción */
+.acciones{
+  margin-top: .75rem;
+  display: flex; flex-wrap: wrap; gap: .5rem;
 }
-
-td a {
-  color: var(--color-primario);
+.btn-accion{
+  display: flex;
   text-decoration: none;
-  font-weight: 500;
+  padding: .5rem .7rem;
+  border-radius: .5rem;
+  border: 1px solid #a78bfa;
+  color: #e9e7ff;
+  background: transparent;
+  font-weight: 600;
+  box-shadow: inset 0 0 8px #6d28d9, 0 0 8px #6d28d9;
+  transition: transform .12s ease, box-shadow .2s ease;
 }
+.btn-accion:hover{ transform: translateY(-1px); box-shadow: inset 0 0 14px #a78bfa, 0 0 16px #a78bfa; }
+.btn-on    { border-color:#22c55e; box-shadow: inset 0 0 8px #22c55e, 0 0 8px #22c55e; color:#bbf7d0; }
+.btn-off   { border-color:#ef4444; box-shadow: inset 0 0 8px #ef4444, 0 0 8px #ef4444; color:#fecaca; }
+.btn-delete{ border-color:#f87171; box-shadow: inset 0 0 8px #f87171, 0 0 8px #f87171; color:#ffe4e6; }
 
-td a:hover {
-  text-decoration: underline;
-}
+/* (opcional) Si aún existe la tabla antigua, escóndela */
+table{ display:none; }
+
 
 /* ============================================= */
 /* ESTILOS PÁGINA DE REPORTES        */
@@ -294,7 +425,7 @@ td a:hover {
 }
 
 button.exportar {
-  background-color: var(--color-blanco);
+  background-color: var(--color-negro);
   color: var(--color-texto);
   border: 1px solid var(--color-borde);
   padding: 0.75rem 1.5rem;
@@ -308,4 +439,101 @@ button.exportar {
 button.exportar:hover {
   background-color: #f9fafb;
   box-shadow: var(--sombra-tarjeta);
+}
+
+
+
+/* =======================================================================
+   DASHBOARD (base.html + reportes.html)
+   ======================================================================= */
+
+/* ≥1025px — escritorio: reserva el espacio del sidebar sin tocar el HTML */
+@media (min-width: 1025px){
+  body { padding-left: 240px; }     /* empuja TODO el contenido a la derecha */
+  /* evita doble empuje si hay márgenes existentes */
+  .main, body > h1, body > form, body > table, .cards { margin-left: 0; }
+}
+
+/* ≤1280px — tablets grandes / laptops pequeñas: 2 tarjetas por fila */
+@media (max-width: 1280px){
+  .cards{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ≤1024px — vista móvil/tablet: el sidebar actúa como barra superior fija */
+@media (max-width: 1024px){
+  /* barra superior horizontal */
+  .topbar{
+    width: 100%;
+    height: 72px;
+    left: 0; top: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+  .topbar h2{ margin: 0 1rem 0 0; font-size: 1.4rem; }
+  .topbar nav{
+    flex-direction: row;
+    gap: .75rem;
+    position: static;     /* importante: para que no quede nada absolute */
+    padding: 0;
+  }
+  .topbar nav a:last-child{ position: static; } /* “Cerrar sesión” deja de anclarse abajo */
+
+  /* contenido sin margen izquierdo y con respiración lateral */
+  .main, body > h1, body > form, body > table, .cards{
+    margin-left: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* espacio para que nada quede oculto bajo la barra fija */
+  body{ padding-top: 84px; padding-left: 0; }
+
+  /* grid de tarjetas en 2 columnas */
+  .cards{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+/* ≤768px — móvil: 1 tarjeta por fila y formulario apilado */
+@media (max-width: 768px){
+  .cards{ grid-template-columns: 1fr; }
+  body > form{
+    flex-direction: column;
+    align-items: stretch;
+    gap: .75rem;
+  }
+  body > form button{ width: 100%; }
+}
+
+/* ≤480px — ajustes finos de tipografía/espacios en móvil pequeño */
+@media (max-width: 480px){
+  body > h1{ font-size: 1.5rem; }
+  .topbar h2{ font-size: 1.2rem; }
+  .pc-icon{ width: 88px; height: 88px; }
+}
+
+
+/* =======================================================================
+   LOGIN (login.html)
+   ======================================================================= */
+
+/* ≤768px — tarjeta un poco más compacta */
+@media (max-width: 768px){
+  .login-tarjeta{
+    padding: 1.75rem 1.25rem;
+    max-width: 420px;
+    margin: 120px auto 2rem; /* aire por si hay barra superior en otras vistas */
+  }
+  .marca{ font-size: 2.2rem; }
+}
+
+/* ≤480px — ocupa casi todo el ancho del móvil */
+@media (max-width: 480px){
+  .login-tarjeta{
+    max-width: 92vw;
+    padding: 1.25rem 1rem;
+    margin: 80px auto 1.25rem;
+  }
+  .entrada{ font-size: .95rem; }
+  .boton{ padding: .75rem; font-size: 1rem; }
 }

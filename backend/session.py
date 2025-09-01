@@ -42,3 +42,5 @@ async def get_user_or_redirect(request: Request):
     if user_email is None:
         return RedirectResponse(url="/login")
     return user_email
+
+

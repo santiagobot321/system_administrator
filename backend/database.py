@@ -1,7 +1,7 @@
 import mariadb
 import sys
 
-# TODO: Cargar esto desde variables de entorno en lugar de hardcodearlo.
+#  Cargar esto desde variables de entorno en lugar de hardcodearlo.
 # Asegúrate de que la contraseña sea la correcta para tu usuario root de MariaDB.
 DB_CONFIG = {
     'user': 'root',
