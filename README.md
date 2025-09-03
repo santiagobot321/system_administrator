@@ -58,9 +58,8 @@ Este proyecto nace para resolver un problema común en redes con múltiples PCs:
 
 # 🔧 Paso a paso
 ## Clonar el repositorio
-- git clone https://github.com/santiagobot321/system_administrator.git
-- cd
-- riwimanager
+1. git clone https://github.com/santiagobot321/system_administrator.git
+2. cd system_administrator
 
 ## Dar permisos al instalador
 chmod +x setup.sh
