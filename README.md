@@ -65,8 +65,9 @@ riwimanager/
 
 
 # Clonar el repositorio
-git clone https://github.com/tuusuario/riwimanager.git
-cd riwimanager
+- git clone https://github.com/santiagobot321/system_administrator.git
+- cd
+- riwimanager
 
 # Dar permisos al instalador
 chmod +x setup.sh
