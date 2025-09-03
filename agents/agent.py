@@ -12,7 +12,7 @@ sys.stderr.reconfigure(line_buffering=True)
 # 🖥️ Apagar el equipo
 def shutdown_pc():
     print("Ejecutando apagado...")
-    os.system("shutdown now")  # ahora no pedirá contraseña
+    os.system("shutdown now")
 
 def show_welcome(video_path="/home/coders/Escritorio/hola.mp4"):
     print("🎬 Mostrando video de bienvenida...")

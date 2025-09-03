@@ -2,9 +2,10 @@ from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
-from backend.db import get_connection
+from backend.database import get_db_connection
 import subprocess
 from backend.session import get_user_or_redirect
+from tools.wol import send_wol
 
 
 router = APIRouter()
@@ -18,7 +19,7 @@ class EstadoEquipo(BaseModel):
 
 @router.post("/report")
 def recibir_estado(estado: EstadoEquipo):
-    conn = get_connection()
+    conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("""
         UPDATE equipos SET estado=%s, conectado=%s WHERE hostname=%s
@@ -37,7 +38,7 @@ class ErrorReport(BaseModel):
 
 @router.post("/error")
 def recibir_error(error: ErrorReport):
-    conn = get_connection()
+    conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("""
         UPDATE equipos SET error=%s WHERE hostname=%s
@@ -51,7 +52,7 @@ def recibir_error(error: ErrorReport):
 # --- Listar equipos ---
 @router.get("/")
 def listar_equipos(request: Request):
-    conn = get_connection()
+    conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT id, hostname, mac, ip, estado, conectado, error FROM equipos")
     equipos = cur.fetchall()
