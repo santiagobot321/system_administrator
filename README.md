@@ -1,82 +1,82 @@
-# system_administrator
-Para que tu app funcione bien, necesitas instalar:
-# Crear y activar entorno virtual
-sudo apt install python3.12-venv -y
+# 🖥️ Riwimanager
 
-python3 -m venv venv
+**Riwimanager** es un prototipo funcional para la **administración remota de equipos** en una red local. Permite encender, apagar y mostrar contenido en pantalla de los equipos cliente desde una interfaz centralizada.
 
-source venv/bin/activate
+---
 
-# Instalar dependencias de Python
-pip install fastapi uvicorn[standard] jinja2 python-multipart passlib[bcrypt] itsdangerous
+## 📌 Descripción
 
-sudo apt install libmariadb-dev
+Este proyecto nace para resolver un problema común en redes con múltiples PCs: tener que configurar y administrar cada una manualmente. **Riwimanager** busca simplificar estas tareas permitiendo:
 
-sudo apt install python3.12-dev
+- Encender/apagar equipos remotamente
+- Mostrar contenido (por ejemplo, videos) en las pantallas de los clientes
+- Gestionar el estado de cada equipo
+- Login seguro del administrador de sistemas
 
-pip install mariadb sqlalchemy
+🧪 Es un proyecto en desarrollo, con vistas a incorporar en el futuro:
+- Configuración remota de sistemas operativos (incluyendo dual boot)
+- Instalación automática de programas
+- Actualizaciones y mantenimiento de software vía red
 
-👉 Explicación:
+---
 
-fastapi → framework principal.
+## ⚙️ Tecnologías usadas
 
-uvicorn[standard] → servidor ASGI para correr FastAPI.
-passlib[bcrypt] → para hashear y verificar contraseñas de forma segura.
+- **Backend:** Python 3.12, FastAPI
+- **Base de datos:** MariaDB
+- **Frontend:** HTML + Jinja2 + CSS
+- **ORM:** SQLAlchemy
+- **Autenticación:** Passlib (bcrypt), Itsdangerous
+- **Otros:** Wake-on-LAN, sistema de plantillas, manejo de formularios
 
-jinja2 → renderizar templates HTML.
+---
 
-python-multipart → si vas a manejar formularios o subir archivos.
+## 🧩 Estructura del proyecto
 
-mariadb → conector oficial para MariaDB.
-
-sqlalchemy → ORM recomendado para manejar base de datos (más fácil que escribir SQL directo).
-
-
-Configuración de MariaDB
-
-Instalar MariaDB (si no lo hiciste):
-
-
-sudo apt install mariadb-server mariadb-client -y
-
-sudo systemctl start mariadb
-
-sudo systemctl enable mariadb
-
-
-sudo mariadb -u root
-
-
--- Crear la base de datos
-CREATE DATABASE IF NOT EXISTS administrator_system;
-
--- Seleccionar la base de datos
-USE administrator_system;
-
--- Crear la tabla
-CREATE TABLE equipos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    hostname VARCHAR(100) NOT NULL,
-    mac VARCHAR(17) NOT NULL UNIQUE,
-    ip VARCHAR(15) NOT NULL UNIQUE,
-    estado VARCHAR(50),
-    conectado BOOLEAN DEFAULT FALSE,
-    error TEXT
-);
+riwimanager/
+├── backend/
+│ ├── routes/ # Rutas de FastAPI
+│ ├── templates/ # HTML + CSS
+│ ├── static/ # Archivos estáticos (CSS, imágenes)
+│ ├── main.py # Punto de entrada de la app
+│ ├── db.py # Conexión a la base de datos
+│ ├── auth.py # Lógica de login
+│ └── session.py # Gestión de sesiones
+├── tools/ # Scripts utilitarios
+│ ├── create_admin.py # Crear primer usuario admin
+│ ├── wol.py # Wake-on-LAN
+│ └── update_system.py # Placeholder para actualizaciones
+├── setup.sh # Script de instalación y despliegue local
+├── README.md
+└── .gitignore
 
 
--- Crear la tabla de usuarios
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL
-);
+---
+
+## 🚀 Instalación y ejecución local
+
+### Requisitos previos
+
+- Ubuntu/Debian
+- Python 3.12
+- Git
+
+### 🔧 Paso a paso
 
 
-Crear el primer usuario administrador
+# Clonar el repositorio
+git clone https://github.com/tuusuario/riwimanager.git
+cd riwimanager
 
-python3 scripts/create_admin.py
+# Dar permisos al instalador
+chmod +x setup.sh
+
+# Ejecutar el script de instalación y despliegue local
+./setup.sh
 
 
+<img width="1920" height="958" alt="image" src="https://github.com/user-attachments/assets/1c485bb5-0fc2-4002-8b7f-c647044fa6f4" />
 
-uvicorn backend.main:app --reload
+<img width="1920" height="958" alt="image" src="https://github.com/user-attachments/assets/24b8fc39-5a1d-4158-8514-a81112df54e4" />
+
+
