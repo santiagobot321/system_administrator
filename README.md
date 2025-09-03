@@ -25,7 +25,6 @@ Este proyecto nace para resolver un problema común en redes con múltiples PCs:
 - **Backend:** Python 3.12, FastAPI
 - **Base de datos:** MariaDB
 - **Frontend:** HTML + Jinja2 + CSS
-- **ORM:** SQLAlchemy
 - **Autenticación:** Passlib (bcrypt), Itsdangerous
 - **Otros:** Wake-on-LAN, sistema de plantillas, manejo de formularios
 
