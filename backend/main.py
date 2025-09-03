@@ -10,16 +10,17 @@ from tools.wol import send_wol
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="backend/templates/static"), name="static")
-# Plantillas HTML
+# HTML Templates
 templates = Jinja2Templates(directory="backend/templates")
 
 @app.middleware("http")
 async def add_cache_control_header(request: Request, call_next):
     """
-    Middleware para añadir cabeceras de control de caché a las respuestas.
-    Esto evita que el navegador guarde páginas protegidas y permita el acceso
-    con el botón "atrás" después de cerrar sesión.
+    Middleware to add cache-control headers to responses.
+    This prevents the browser from caching protected pages, which could allow
+    access via the "back" button after logging out.
     """
+    # Process the request and get the response
     response = await call_next(request)
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     response.headers["Pragma"] = "no-cache"
@@ -28,6 +29,7 @@ async def add_cache_control_header(request: Request, call_next):
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_get(request: Request):
+    # Check for an error message in the query parameters to display it on the login page.
     error = request.query_params.get("error")
     return templates.TemplateResponse("login.html", {"request": request, "error": error})
 
@@ -35,39 +37,44 @@ async def login_get(request: Request):
 async def login_post(email: str = Form(...), password: str = Form(...)):
     conn = None
     try:
+        # Establish a database connection.
         conn = get_db_connection()
         cur = conn.cursor()
+        # Fetch the user's hashed password from the database based on the provided email.
         cur.execute("SELECT password_hash FROM users WHERE email = ?", (email,))
         user_data = cur.fetchone()
 
+        # If no user is found or they don't have a password set, redirect to login with an error.
         if not user_data or not user_data[0]:
             return RedirectResponse(url="/login?error=1", status_code=303)
 
-        # El conector de la BD puede devolver bytes, passlib espera una cadena.
+        # The DB connector might return bytes; passlib expects a string. Decode if necessary.
         hashed_password = user_data[0].decode('utf-8') if isinstance(user_data[0], bytes) else user_data[0]
 
+        # Verify the provided plain password against the stored hash.
         if not verify_password(password, hashed_password):
             return RedirectResponse(url="/login?error=1", status_code=303)
 
-        # Si todo es correcto, crea la sesión y redirige a la página principal.
+        # If everything is correct, create a session and redirect to the main page.
         response = RedirectResponse(url="/", status_code=303)
         create_session(response, user_email=email)
         return response
     finally:
+        # Ensure the database connection is closed, even if errors occur.
         if conn:
             conn.close()
 
 @app.get("/logout", response_class=RedirectResponse)
 async def logout():
-    # Limpiamos la cookie de sesión y redirigimos al login.
+    # Clear the session cookie and redirect to the login page.
     response = RedirectResponse(url="/login")
     clear_session(response)
     return response
 
 @app.get("/reportes", response_class=HTMLResponse)
 async def reportes(request: Request, user: str = Depends(get_user_or_redirect)):
-    # La dependencia 'get_user_or_redirect' ya protege esta ruta.
-    # Si el código llega aquí, el usuario está autenticado.
+    # The 'get_user_or_redirect' dependency already protects this route.
+    # If the code reaches this point, the user is authenticated.
     return templates.TemplateResponse("reportes.html", {"request": request, "user_email": user})
 
 
@@ -77,12 +84,14 @@ async def reportes(request: Request, user: str = Depends(get_user_or_redirect)):
 @app.get("/encender/{mac}")
 async def encender_equipo(mac: str):
     try:
+        # Send the Wake-on-LAN magic packet to the specified MAC address.
         send_wol(mac)
         return RedirectResponse(url="/", status_code=303)
     except Exception as e:
+        # Return an error response if something goes wrong.
         return HTMLResponse(content=f"Error al encender el equipo: {e}", status_code=500)
 
 
 
-# Incluir las rutas
+# Include the routers from other modules.
 app.include_router(equipos.router)

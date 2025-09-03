@@ -6,20 +6,26 @@
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Sidebar / Navigation Bar -->
     <header class="topbar">
         <h2>RIWI Manager</h2>
         <nav>
+            <!-- Navigation links to other pages -->
             <a href="/">Network</a>
             <a href="/reportes">Reportes</a>
             <a href="/logout">Cerrar sesión</a>
         </nav>
     </header>
 
-    <!-- Contenido -->
+    <!-- Main Content Area -->
     <main class="main">
         <h1>Reportes & Alertas</h1>
 
+        <!-- 
+        This section is currently a static placeholder for alerts.
+        In a future version, this would be dynamically populated with real data
+        from the backend, showing recent successes or errors from agent actions.
+        -->
         <div class="alert error">
             ❌ Error en despliegue 'equip22' <span class="time">hace 2 horas</span>
         </div>
@@ -27,6 +33,7 @@
             ✅ Despliegue completado en 'equip3' <span class="time">hace 1 día</span>
         </div>
 
+        <!-- A button for exporting reports, currently non-functional. -->
         <button class="exportar">Exportar...</button>
     </main>
 </body>
