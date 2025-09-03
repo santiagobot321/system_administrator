@@ -4,6 +4,13 @@
 
 ---
 
+**Autores:** 
+David Sierra |
+Santiago Botero |
+Michael Franco |
+Cristian Henao |
+
+
 ## 📌 Descripción
 
 Este proyecto nace para resolver un problema común en redes con múltiples PCs: tener que configurar y administrar cada una manualmente. **Riwimanager** busca simplificar estas tareas permitiendo:
