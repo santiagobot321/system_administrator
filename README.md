@@ -34,21 +34,36 @@ Este proyecto nace para resolver un problema común en redes con múltiples PCs:
 ## 🧩 Estructura del proyecto
 
 riwimanager/
-├── backend/
-│ ├── routes/ # Rutas de FastAPI
-│ ├── templates/ # HTML + CSS
-│ ├── static/ # Archivos estáticos (CSS, imágenes)
-│ ├── main.py # Punto de entrada de la app
-│ ├── db.py # Conexión a la base de datos
-│ ├── auth.py # Lógica de login
-│ └── session.py # Gestión de sesiones
-├── tools/ # Scripts utilitarios
-│ ├── create_admin.py # Crear primer usuario admin
-│ ├── wol.py # Wake-on-LAN
-│ └── update_system.py # Placeholder para actualizaciones
-├── setup.sh # Script de instalación y despliegue local
-├── README.md
-└── .gitignore
+├── agents/                          # Agentes (clientes) para monitorear equipos (por desarrollar)
+├── backend/                         # Backend principal con FastAPI
+│   ├── routes/                      # Rutas de la API
+│   │   ├── utils/                   # Utilidades varias
+│   │   ├── auth.py                  # Rutas de autenticación
+│   │   └── equipos.py               # Rutas para gestión de equipos
+│   ├── templates/                   # Archivos HTML (Jinja2) y recursos estáticos
+│   │   ├── static/
+│   │   │   ├── imag/                # Carpeta para imágenes
+│   │   │   └── style.css            # Estilos del frontend
+│   │   ├── base.html                # Plantilla base
+│   │   ├── login.html               # Formulario de inicio de sesión
+│   │   └── reportes.html            # Página de reportes (en desarrollo)
+│   ├── auth.py                      # Lógica de autenticación
+│   ├── database.py                  # Conexión a la base de datos (MariaDB)
+│   ├── db.py                        # Archivo auxiliar o legado (no utilizado)
+│   ├── main.py                      # Punto de entrada de la app FastAPI
+│   └── session.py                   # Gestión de sesión de usuario
+├── infrastructure/                 # Infraestructura del sistema (por desarrollar)
+├── tools/                          # Herramientas para administración remota
+│   ├── create_admin.py             # Script para crear un usuario administrador
+│   ├── host.py                     # Script para apagar equipos de forma remota
+│   ├── install.py                  # Instalación remota de software (ej: VSCode)
+│   ├── update_system.py            # Script de actualización del sistema
+│   └── wol.py                      # Envío de paquetes Wake-On-LAN
+├── venv/                           # Entorno virtual de Python (no incluir en Git)
+├── .gitignore                      # Archivos y carpetas ignoradas por Git
+├── README.md                       # Documentación del proyecto
+└── setup.sh                        # Script de instalación y despliegue local
+
 
 
 ---
@@ -61,18 +76,18 @@ riwimanager/
 - Python 3.12
 - Git
 
-### 🔧 Paso a paso
+# 🔧 Paso a paso
 
 
-# Clonar el repositorio
+## Clonar el repositorio
 - git clone https://github.com/santiagobot321/system_administrator.git
 - cd
 - riwimanager
 
-# Dar permisos al instalador
+## Dar permisos al instalador
 chmod +x setup.sh
 
-# Ejecutar el script de instalación y despliegue local
+## Ejecutar el script de instalación y despliegue local
 ./setup.sh
 
 <img width="1920" height="958" alt="image" src="https://github.com/user-attachments/assets/24b8fc39-5a1d-4158-8514-a81112df54e4" />
