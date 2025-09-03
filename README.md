@@ -75,9 +75,11 @@ chmod +x setup.sh
 # Ejecutar el script de instalación y despliegue local
 ./setup.sh
 
-
-<img width="1920" height="958" alt="image" src="https://github.com/user-attachments/assets/1c485bb5-0fc2-4002-8b7f-c647044fa6f4" />
-
 <img width="1920" height="958" alt="image" src="https://github.com/user-attachments/assets/24b8fc39-5a1d-4158-8514-a81112df54e4" />
+
+<img width="1920" height="958" alt="image" src="https://github.com/user-attachments/assets/50212791-4a2e-4fb1-a30a-e73ee91fda63" />
+
+
+
 
 
