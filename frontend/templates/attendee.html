@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIWI Manager - Attendee</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+            background-color: #111;
+            color: #eee;
+            margin: 0;
+            transition: background-color 0.1s;
+        }
+        .container { padding: 2rem; }
+        h1 { font-size: 2rem; color: #7c3aed; }
+        p { font-size: 1.2rem; color: #aaa; }
+        .status { font-size: 1.5rem; font-weight: bold; margin-top: 2rem; transition: color 0.5s; }
+        .status.ok { color: #22c55e; }
+        .status.alert { color: #ef4444; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        #welcome-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.9); display: flex; justify-content: center; align-items: center; z-index: 100; flex-direction: column; }
+        #start-button { background-color: #7c3aed; color: white; border: none; padding: 1rem 2rem; font-size: 1.5rem; font-weight: bold; border-radius: 0.5rem; cursor: pointer; transition: transform 0.2s; }
+        #start-button:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-overlay">
+        <h1>Bienvenido a la Simulación</h1>
+        <p>Se pedirá permiso para usar la cámara para activar el flash.</p>
+        <button id="start-button">Unirse</button>
+    </div>
+
+    <div class="container">
+        <h1>RIWI<span>Manager</span></h1>
+        <p>Estás conectado al sistema de monitoreo.</p>
+        <div id="status" class="status ok">Sistema Seguro</div>
+    </div>
+
+    <audio id="alarm-sound" src="/static/alarm.mp3" preload="auto"></audio>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const welcomeOverlay = document.getElementById("welcome-overlay");
+            const startButton = document.getElementById("start-button");
+            const statusEl = document.getElementById("status");
+            const alarmSound = document.getElementById("alarm-sound");
+            
+            let alarmInterval = null;
+            let videoTrack = null;
+
+            async function startExperience() {
+                alarmSound.play().catch(() => {});
+                alarmSound.pause();
+                alarmSound.currentTime = 0;
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    videoTrack = stream.getVideoTracks()[0];
+                } catch (err) {
+                    console.warn("Flashlight permission denied or not available over HTTP.", err.message);
+                }
+
+                welcomeOverlay.style.display = "none";
+                connect();
+            }
+
+            startButton.addEventListener("click", startExperience);
+
+            const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+            const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
+
+            function connect() {
+                const ws = new WebSocket(wsUrl);
+
+                ws.onopen = () => { console.log("Connected to WebSocket."); };
+
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    if (data.type === "attack") {
+                        if (alarmInterval) clearInterval(alarmInterval);
+                        
+                        alarmSound.play().catch(e => console.error("Audio play failed:", e));
+                        
+                        statusEl.textContent = `¡ATAQUE DETECTADO! (IP: ${data.ip})`;
+                        statusEl.className = "status alert";
+
+                        // --- Start Blinking/Vibrating Loop ---
+                        let isRed = true;
+                        alarmInterval = setInterval(() => {
+                            console.log('Blinking and vibrating...'); // DEBUGGING LINE
+                            
+                            document.body.style.backgroundColor = isRed ? '#8B0000' : '#000000';
+                            isRed = !isRed;
+                            
+                            if (navigator.vibrate) navigator.vibrate(400);
+                        }, 500);
+
+                        // --- Flashlight Control ---
+                        if (videoTrack && 'torch' in videoTrack.getCapabilities()) {
+                            videoTrack.applyConstraints({ advanced: [{ torch: true }] }).catch(e => console.error("Flash on failed", e));
+                        }
+
+                        // --- Stop Alarm After 10 Seconds ---
+                        setTimeout(() => {
+                            clearInterval(alarmInterval);
+                            document.body.style.backgroundColor = "#5d0000";
+                            if (videoTrack && 'torch' in videoTrack.getCapabilities()) {
+                                videoTrack.applyConstraints({ advanced: [{ torch: false }] }).catch(e => console.error("Flash off failed", e));
+                            }
+                        }, 10000);
+                    }
+                };
+
+                ws.onclose = () => {
+                    if (alarmInterval) clearInterval(alarmInterval);
+                    console.log("WebSocket disconnected. Reconnecting...");
+                };
+                ws.onerror = (error) => {
+                    console.error("WebSocket error:", error);
+                    ws.close();
+                };
+            }
+        });
+    </script>
+</body>
+</html>

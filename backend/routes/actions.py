@@ -4,6 +4,8 @@ import subprocess
 import re
 from backend.session import get_user_or_redirect
 from tools.wol import send_wol
+# Import the WebSocket manager
+from .notifications import manager
 
 router = APIRouter()
 
@@ -16,6 +18,17 @@ def validate_ip(ip: str):
     return ip
 
 # --- Remote Actions ---
+
+@router.get("/simulate-attack/{ip}")
+async def simulate_attack(ip: str = Depends(validate_ip), user: str = Depends(get_user_or_redirect)):
+    """
+    Simulates a security attack originating from a specific IP.
+    This will broadcast a message to all connected WebSocket clients.
+    """
+    await manager.broadcast({"type": "attack", "ip": ip})
+    # Redirect back to the dashboard after triggering the alert
+    return RedirectResponse(url="/equipos/", status_code=303)
+
 
 @router.get("/encender/{mac}", response_class=RedirectResponse)
 async def encender_equipo(mac: str, user: str = Depends(get_user_or_redirect)):
@@ -37,6 +50,15 @@ def apagar_equipo(ip: str = Depends(validate_ip), user: str = Depends(get_user_o
     Protected and validated route.
     """
     subprocess.run(["python3", "tools/host.py", ip])
+    return RedirectResponse(url="/equipos/", status_code=303)
+
+@router.get("/update/{ip}")
+def actualizar_equipo(ip: str = Depends(validate_ip), user: str = Depends(get_user_or_redirect)):
+    """
+    Sends an update command to the agent on the specified IP.
+    Protected and validated route.
+    """
+    subprocess.run(["python3", "tools/update_manager.py", ip])
     return RedirectResponse(url="/equipos/", status_code=303)
 
 @router.get("/instalar/{ip}")

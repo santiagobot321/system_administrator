@@ -4,14 +4,38 @@
 <head>
     <title>Administrador de PCs</title>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Styles for the attack alert banner */
+        .attack-banner {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ef4444;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 1000;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0.7; }
+        }
+    </style>
 </head>
 
 <body>
 
+    <!-- Attack Alert Banner -->
+    <div id="attack-banner" class="attack-banner">
+        ¡ATAQUE DETECTADO!
+    </div>
 
     <!-- Sidebar / Top Navigation Bar -->
     <header class="topbar">
-
         <h2>RIWI<span>Manager</span></h2>
         <nav>
             <a href="/equipos/">Network</a>
@@ -20,10 +44,8 @@
         </nav>
     </header>
     
-    <!-- Main content area. The CSS handles the layout. -->
     <main class="main"></main>
 
-    <!-- Page Title -->
     <h1>Lista de Equipos</h1>
     <form action="/equipos/add" method="post">
         <input type="text" name="hostname" placeholder="Hostname" required>
@@ -32,22 +54,13 @@
         <button type="submit" class="agre">Agregar</button>
     </form>
 
-
-<!-- Section to display all computers as a grid of cards -->
 <section class="cards">
-  <!-- Loop through each computer ('e') in the 'equipos' list provided by the backend -->
   {% for e in equipos %}
   <article class="card-pc">
     
-      <!-- Hostname of the computer -->
       <h3 class="hostname">{{ e['hostname'] }}</h3><b></b>
-      <!-- Static PC icon -->
       <img class="pc-icon" src="/static/imag/computadora (3).png" alt="PC" />
      
-    <!-- DEBUGGING LINE: Display the content of the 'e' variable -->
-    <code style="color: white; background: black; padding: 5px; display: block; margin-top: 10px;">{{ e }}</code>
-
-    <!-- Unordered list to display computer information -->
     <ul class="info">
       <li><strong>ID:</strong> {{ e['id'] }}</li>
       <li><strong>MAC:</strong> {{ e['mac'] }}</li>
@@ -55,21 +68,18 @@
       <li><strong>Estado:</strong> {{ e['estado'] }}</li>
       <li>
         <strong>Conectado:</strong>
-        <!-- Conditionally display a status pill based on the 'conectado' boolean -->
         {% if e['conectado'] %}<span class="pill ok">🟢 Sí</span>{% else %}<span class="pill bad">🔴 No</span>{% endif %}
       </li>
       <li>
         <strong>Error:</strong>
-        <!-- If an error message exists, display a warning pill. -->
         {% if e['error'] %}<span class="pill warn">⚠️ {{ e['error'] }}</span>{% else %}<span class="pill mute">Sin errores</span>{% endif %}
       </li>
     </ul>
 
-    <!-- Action buttons for each computer -->
     <div class="acciones">
-      <!-- The href attributes are now correctly generated using dictionary keys -->
       <a class="btn-accion btn-on" href="/actions/encender/{{ e['mac'] }}">Encender</a>
       <a class="btn-accion btn-off" href="/actions/apagar/{{ e['ip'] }}">Apagar</a>
+      <a class="btn-accion btn-update" href="/actions/update/{{ e['ip'] }}">Actualizar</a>
       <a class="btn-accion" href="/actions/bienvenida/{{ e['ip'] }}">Bienvenida</a>
       <a class="btn-accion btn-delete" href="/equipos/delete/{{ e['id'] }}">Eliminar</a>
     </div>
@@ -77,5 +87,44 @@
   {% endfor %}
 </section>
 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const banner = document.getElementById("attack-banner");
+        const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
 
+        function connect() {
+            const ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => console.log("Dashboard connected to WebSocket.");
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === "attack") {
+                    console.log("Attack signal received on dashboard!", data);
+                    banner.textContent = `¡ATAQUE DETECTADO DESDE IP: ${data.ip}!`;
+                    banner.style.display = "block";
+
+                    setTimeout(() => {
+                        banner.style.display = "none";
+                    }, 10000);
+                }
+            };
+
+            ws.onclose = () => {
+                console.log("Dashboard WebSocket disconnected. Reconnecting...");
+                setTimeout(connect, 3000);
+            };
+
+            ws.onerror = (error) => {
+                console.error("Dashboard WebSocket error:", error);
+                ws.close();
+            };
+        }
+
+        connect();
+    });
+</script>
+
+</body>
 </html>

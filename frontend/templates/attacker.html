@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attacker Console</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 2rem;
+        }
+        h1 {
+            color: #f00;
+            text-align: center;
+            text-shadow: 0 0 5px #f00;
+            animation: flicker 1.5s infinite alternate;
+        }
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow: 0 0 4px #f00, 0 0 11px #f00, 0 0 19px #f00, 0 0 40px #f00;
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
+        }
+        #targets {
+            border: 1px solid #0f0;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        .target {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px dashed #0f0;
+        }
+        .target:last-child {
+            border-bottom: none;
+        }
+        .target-info {
+            font-size: 1.2rem;
+        }
+        .attack-btn {
+            background-color: #f00;
+            color: #fff;
+            border: 1px solid #f00;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: inherit;
+            text-transform: uppercase;
+            box-shadow: 0 0 5px #f00;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        .attack-btn:hover {
+            background-color: #ff4444;
+            box-shadow: 0 0 15px #f00;
+        }
+        #status {
+            margin-top: 1rem;
+            color: #ff0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>ATTACKER CONSOLE</h1>
+    <div id="targets">
+        <!-- Targets will be loaded here by JavaScript -->
+    </div>
+    <div id="status"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const targetsContainer = document.getElementById('targets');
+            const statusEl = document.getElementById('status');
+
+            async function fetchTargets() {
+                try {
+                    const response = await fetch('/equipos/api/equipos');
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok: ${response.statusText}`);
+                    }
+                    const targets = await response.json();
+                    renderTargets(targets);
+                } catch (error) {
+                    statusEl.textContent = `ERROR: Could not fetch targets. ${error.message}`;
+                }
+            }
+
+            function renderTargets(targets) {
+                if (targets.length === 0) {
+                    targetsContainer.innerHTML = '<p>No targets found in network.</p>';
+                    return;
+                }
+                targetsContainer.innerHTML = targets.map(target => `
+                    <div class="target">
+                        <div class="target-info">
+                            <strong>TARGET:</strong> ${target.hostname} // <strong>IP:</strong> ${target.ip}
+                        </div>
+                        <button class="attack-btn" data-ip="${target.ip}">Launch Attack</button>
+                    </div>
+                `).join('');
+            }
+
+            targetsContainer.addEventListener('click', async (event) => {
+                if (event.target.classList.contains('attack-btn')) {
+                    const ip = event.target.dataset.ip;
+                    statusEl.textContent = `Launching attack on ${ip}...`;
+                    try {
+                        // We don't need to wait for the response, just trigger it
+                        fetch(`/actions/simulate-attack/${ip}`);
+                        statusEl.textContent = `Attack signal sent to ${ip}!`;
+                        setTimeout(() => statusEl.textContent = '', 3000);
+                    } catch (error) {
+                        statusEl.textContent = `ERROR: Failed to send attack signal. ${error.message}`;
+                    }
+                }
+            });
+
+            fetchTargets();
+        });
+    </script>
+</body>
+</html>
