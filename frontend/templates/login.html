@@ -6,7 +6,7 @@
   <!-- Page Title -->
   <title>RIWI Manager - Login</title>
   <!-- Link to the main stylesheet -->
-  <link rel="stylesheet" href="./static/style.css" />
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
   <!-- This div centers the login card vertically and horizontally on the page -->
@@ -17,8 +17,9 @@
       <h1 class="marca">RIWI<span>Manager</span></h1>
       
       <!-- The login form. It sends a POST request to the /login endpoint. -->
-      <!-- NOTE: An error message could be displayed here if passed from the backend -->
-      <!-- e.g., {% if error %} <div class="login-error">Invalid credentials</div> {% endif %} -->
+      {% if error %}
+      <div class="login-error">Usuario o contraseña incorrectos.</div>
+      {% endif %}
       <form method="POST" action="/login">
         <!-- Email Input Field -->
         <label for="email">Correo electrónico</label>

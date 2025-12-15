@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Administrador de PCs</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+
+    <!-- Sidebar / Top Navigation Bar -->
+    <header class="topbar">
+
+        <h2>RIWI<span>Manager</span></h2>
+        <nav>
+            <a href="/equipos/">Network</a>
+            <a href="/reportes">Reportes</a>
+            <a href="/logout">Cerrar sesión</a>
+        </nav>
+    </header>
+    
+    <!-- Main content area. The CSS handles the layout. -->
+    <main class="main"></main>
+
+    <!-- Page Title -->
+    <h1>Lista de Equipos</h1>
+    <form action="/equipos/add" method="post">
+        <input type="text" name="hostname" placeholder="Hostname" required>
+        <input type="text" name="mac" placeholder="MAC" required>
+        <input type="text" name="ip" placeholder="IP" required>
+        <button type="submit" class="agre">Agregar</button>
+    </form>
+
+
+<!-- Section to display all computers as a grid of cards -->
+<section class="cards">
+  <!-- Loop through each computer ('e') in the 'equipos' list provided by the backend -->
+  {% for e in equipos %}
+  <article class="card-pc">
+    
+      <!-- Hostname of the computer -->
+      <h3 class="hostname">{{ e['hostname'] }}</h3><b></b>
+      <!-- Static PC icon -->
+      <img class="pc-icon" src="/static/imag/computadora (3).png" alt="PC" />
+     
+    <!-- DEBUGGING LINE: Display the content of the 'e' variable -->
+    <code style="color: white; background: black; padding: 5px; display: block; margin-top: 10px;">{{ e }}</code>
+
+    <!-- Unordered list to display computer information -->
+    <ul class="info">
+      <li><strong>ID:</strong> {{ e['id'] }}</li>
+      <li><strong>MAC:</strong> {{ e['mac'] }}</li>
+      <li><strong>IP:</strong> {{ e['ip'] }}</li>
+      <li><strong>Estado:</strong> {{ e['estado'] }}</li>
+      <li>
+        <strong>Conectado:</strong>
+        <!-- Conditionally display a status pill based on the 'conectado' boolean -->
+        {% if e['conectado'] %}<span class="pill ok">🟢 Sí</span>{% else %}<span class="pill bad">🔴 No</span>{% endif %}
+      </li>
+      <li>
+        <strong>Error:</strong>
+        <!-- If an error message exists, display a warning pill. -->
+        {% if e['error'] %}<span class="pill warn">⚠️ {{ e['error'] }}</span>{% else %}<span class="pill mute">Sin errores</span>{% endif %}
+      </li>
+    </ul>
+
+    <!-- Action buttons for each computer -->
+    <div class="acciones">
+      <!-- The href attributes are now correctly generated using dictionary keys -->
+      <a class="btn-accion btn-on" href="/actions/encender/{{ e['mac'] }}">Encender</a>
+      <a class="btn-accion btn-off" href="/actions/apagar/{{ e['ip'] }}">Apagar</a>
+      <a class="btn-accion" href="/actions/bienvenida/{{ e['ip'] }}">Bienvenida</a>
+      <a class="btn-accion btn-delete" href="/equipos/delete/{{ e['id'] }}">Eliminar</a>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+
+
+</html>
