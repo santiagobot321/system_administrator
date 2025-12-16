@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae8578b1-d675-4724-a0dc-915b5a3c6391" name="Changes" comment="refactorizando todo">
+    <list default="true" id="ae8578b1-d675-4724-a0dc-915b5a3c6391" name="Changes" comment="arreglando rutas">
       <change beforePath="$PROJECT_DIR$/render_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/render_server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -93,12 +93,37 @@
       <option name="project" value="LOCAL" />
       <updated>1765848824896</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="refactorizando todo">
+      <option name="closed" value="true" />
+      <created>1765850059605</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1765850059605</updated>
+    </task>
+    <task id="LOCAL-00005" summary="arreglando rutas">
+      <option name="closed" value="true" />
+      <created>1765850350770</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1765850350770</updated>
+    </task>
+    <task id="LOCAL-00006" summary="arreglando rutas">
+      <option name="closed" value="true" />
+      <created>1765850399254</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1765850399254</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="refactorizando front" />
     <MESSAGE value="refactorizando todo" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactorizando todo" />
+    <MESSAGE value="arreglando rutas" />
+    <option name="LAST_COMMIT_MESSAGE" value="arreglando rutas" />
   </component>
 </project>
