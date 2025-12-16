@@ -1,6 +1,19 @@
 import os
+import sys
 import uvicorn
-# Importamos la aplicación FastAPI desde nuestro módulo de simulación
+
+# --- SOLUCIÓN AL ModuleNotFoundError ---
+# 1. Obtenemos la ruta absoluta del directorio donde se encuentra este archivo (la raíz del proyecto en Render).
+#    En Render, esto será /opt/render/project/src
+project_root = os.path.dirname(os.path.abspath(__file__))
+
+# 2. Añadimos esta ruta al sys.path de Python.
+#    Esto le dice a Python que busque módulos aquí.
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+# -----------------------------------------
+
+# Ahora, esta importación debería funcionar sin problemas.
 from agent.simulation_server.server import app as simulation_app
 
 if __name__ == "__main__":
