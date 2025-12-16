@@ -1,4 +1,4 @@
-# Dependencias del agente
+# Dependencias del agente (no usadas en Render, pero se mantienen por consistencia)
 scapy
 requests
 
@@ -9,3 +9,5 @@ jinja2
 gunicorn
 websockets
 python-multipart
+passlib[bcrypt]
+itsdangerous

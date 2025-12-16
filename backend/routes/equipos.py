@@ -1,80 +1,49 @@
 from fastapi import APIRouter, Request, Form, Depends
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from backend.database import get_db_connection
-from backend.session import get_user_or_redirect
+from typing import List, Dict, Any
 import os
+
+# --- Importamos la lógica de sesión para proteger las rutas ---
+from backend.session import get_user_or_redirect
+
+# --- 1. "Base de Datos" en Memoria ---
+EQUIPOS_DB: List[Dict[str, Any]] = [
+    {"id": 1, "hostname": "PC-SALA-01", "ip": "192.168.1.50", "mac": "00:1A:2B:3C:4D:5E", "estado": "En línea", "conectado": True, "error": None},
+    {"id": 2, "hostname": "PC-SALA-02", "ip": "192.168.1.51", "mac": "00:1A:2B:3C:4D:5F", "estado": "Desconocido", "conectado": False, "error": None},
+    {"id": 3, "hostname": "SERVIDOR-PROY", "ip": "192.168.1.52", "mac": "00:1A:2B:3C:4D:60", "estado": "Error de red", "conectado": False, "error": "No responde al ping"},
+]
 
 router = APIRouter()
 
+# Apuntamos a la carpeta `frontend` que está en la raíz del proyecto
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "frontend/templates")
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
+# --- Rutas que usan la DB en memoria ---
 
-# --- HTML Page Route ---
 @router.get("/", response_class=HTMLResponse)
 def listar_equipos_page(request: Request, user: str = Depends(get_user_or_redirect)):
-    """
-    Displays the main dashboard page, listing all computers from the database.
-    """
-    conn = get_db_connection()
-    cur = conn.cursor(dictionary=True)
-    cur.execute("SELECT id, hostname, mac, ip, estado, conectado, error FROM equipos")
-    equipos = cur.fetchall()
-    conn.close()
-    return templates.TemplateResponse("base.html", {"request": request, "equipos": equipos})
+    """ Sirve el dashboard principal con la lista de equipos de nuestra DB en memoria. """
+    return templates.TemplateResponse("base.html", {"request": request, "equipos": EQUIPOS_DB})
 
-# --- API Data Route ---
 @router.get("/api/equipos", response_class=JSONResponse)
 def listar_equipos_api(user: str = Depends(get_user_or_redirect)):
-    """
-    Returns a JSON list of all computers. This is used by the attacker's panel.
-    """
-    conn = get_db_connection()
-    cur = conn.cursor(dictionary=True)
-    cur.execute("SELECT id, hostname, ip FROM equipos")
-    equipos = cur.fetchall()
-    conn.close()
-    return equipos
+    """ La API del atacante ahora lee de la misma DB en memoria. """
+    return EQUIPOS_DB
 
-
-# --- Add Computer ---
 @router.post("/add", response_class=RedirectResponse)
-async def agregar_equipo(
-    hostname: str = Form(...),
-    mac: str = Form(...),
-    ip: str = Form(...),
-    estado: str = Form("desconocido"),
-    user: str = Depends(get_user_or_redirect)
-):
-    conn = None
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute(
-            "INSERT INTO equipos (hostname, mac, ip, estado) VALUES (%s, %s, %s, %s)",
-            (hostname, mac, ip, estado)
-        )
-        conn.commit()
-    finally:
-        if conn:
-            conn.close()
+async def agregar_equipo(hostname: str = Form(...), mac: str = Form(...), ip: str = Form(...), user: str = Depends(get_user_or_redirect)):
+    new_id = max(e["id"] for e in EQUIPOS_DB) + 1 if EQUIPOS_DB else 1
+    EQUIPOS_DB.append({
+        "id": new_id, "hostname": hostname, "mac": mac, "ip": ip,
+        "estado": "Añadido", "conectado": False, "error": None
+    })
     return RedirectResponse(url="/equipos/", status_code=303)
 
-# --- Delete Computer ---
-@router.get("/delete/{id}", response_class=RedirectResponse)
-async def eliminar_equipo(id: int, user: str = Depends(get_user_or_redirect)):
-    """
-    Deletes a computer from the database based on its ID.
-    """
-    conn = None
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute("DELETE FROM equipos WHERE id=%s", (id,))
-        conn.commit()
-    finally:
-        if conn:
-            conn.close()
+@router.get("/delete/{equipo_id}", response_class=RedirectResponse)
+async def eliminar_equipo(equipo_id: int, user: str = Depends(get_user_or_redirect)):
+    global EQUIPOS_DB
+    EQUIPOS_DB = [e for e in EQUIPOS_DB if e["id"] != equipo_id]
     return RedirectResponse(url="/equipos/", status_code=303)
