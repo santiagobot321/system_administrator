@@ -1,42 +1,28 @@
 from fastapi import APIRouter
 from backend.models import EstadoEquipo, ErrorReport
-from backend.database import get_db_connection
 
 router = APIRouter()
 
 @router.post("/report")
 def recibir_estado(estado: EstadoEquipo):
     """
-    Receives a status report from a client agent.
-    Updates the computer's status, connectivity, and network details in the database.
+    SIMULACIÓN para la demo.
+    Recibe un reporte de estado, lo imprime en el log del servidor y devuelve éxito.
+    No usa base de datos.
     """
-    conn = get_db_connection()
-    cur = conn.cursor()
-    
-    status_string = f"Red: {estado.red}, Internet: {estado.internet}"
-    is_connected = estado.red and estado.internet
-    
-    # Use %s for parameter markers, which is correct for MariaDB.
-    cur.execute(
-        "UPDATE equipos SET estado=%s, conectado=%s WHERE hostname=%s",
-        (status_string, is_connected, estado.hostname)
-    )
-    conn.commit()
-    conn.close()
+    print(f"DEMO: Estado recibido del agente {estado.hostname}: Red={estado.red}, Internet={estado.internet}")
+    # En una aplicación real, esto actualizaría la base de datos.
+    # Aquí, simplemente confirmamos que la ruta funciona.
     return {"msg": "Estado recibido"}
 
 @router.post("/error")
 def recibir_error(error: ErrorReport):
     """
-    Receives an error report from a client agent.
-    Updates the computer's error field in the database.
+    SIMULACIÓN para la demo.
+    Recibe un reporte de error, lo imprime en el log del servidor y devuelve éxito.
+    No usa base de datos.
     """
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(
-        "UPDATE equipos SET error=%s WHERE hostname=%s",
-        (error.error, error.hostname)
-    )
-    conn.commit()
-    conn.close()
+    print(f"DEMO: Error recibido del agente {error.hostname}: {error.error}")
+    # En una aplicación real, esto actualizaría la base de datos.
+    # Aquí, simplemente confirmamos que la ruta funciona.
     return {"msg": "Error recibido"}
