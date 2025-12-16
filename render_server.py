@@ -1,44 +1,45 @@
 import os
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, Form, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from typing import List
 
-# --- Lógica del Servidor Completo (API + WebSockets + HTML) ---
+# --- 1. "Base de Datos" en Memoria ---
+# Esta lista actuará como nuestra base de datos para la demo.
+# Comienza con los datos quemados, pero ahora podemos añadirle más.
+EQUIPOS_DB = [
+    {"id": 1, "hostname": "PC-SALA-01", "ip": "192.168.1.50", "mac": "00:1A:2B:3C:4D:5E", "estado": "Desconocido", "conectado": False, "error": None},
+    {"id": 2, "hostname": "PC-SALA-02", "ip": "192.168.1.51", "mac": "00:1A:2B:3C:4D:5F", "estado": "Desconocido", "conectado": False, "error": None},
+    {"id": 3, "hostname": "SERVIDOR-PROY", "ip": "192.168.1.52", "mac": "00:1A:2B:3C:4D:60", "estado": "Desconocido", "conectado": False, "error": None},
+]
 
-# 1. Gestor de Conexiones WebSocket
+# --- Lógica del Servidor Completo ---
+
 class ConnectionManager:
     def __init__(self):
         self.active_connections: List[WebSocket] = []
-
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
-
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
-
     async def broadcast(self, message: dict):
         for connection in self.active_connections:
             await connection.send_json(message)
 
 manager = ConnectionManager()
-
-# 2. Creación de la App FastAPI
 app = FastAPI()
 
-# 3. Configuración de Plantillas y Archivos Estáticos
-# Apuntamos a la carpeta `frontend` que está en la raíz del proyecto.
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 templates = Jinja2Templates(directory="frontend/templates")
 
 # --- Endpoints que Sirven las Páginas HTML ---
 
 @app.get("/", response_class=HTMLResponse)
-def get_attacker_console(request: Request):
-    """ Sirve el panel del atacante como página principal para la demo. """
-    return templates.TemplateResponse("base.html", {"request": request})
+def get_dashboard(request: Request):
+    """ Sirve el dashboard principal (`base.html`) con la lista de equipos. """
+    return templates.TemplateResponse("base.html", {"request": request, "equipos": EQUIPOS_DB})
 
 @app.get("/attendee", response_class=HTMLResponse)
 async def get_attendee_page(request: Request):
@@ -47,8 +48,26 @@ async def get_attendee_page(request: Request):
 
 @app.get("/attack", response_class=HTMLResponse)
 def get_attacker_console(request: Request):
-    """ Sirve el panel del atacante como página principal para la demo. """
+    """ Sirve el panel del atacante. """
     return templates.TemplateResponse("attacker.html", {"request": request})
+
+# --- 2. Endpoint POST para Agregar Equipos (LA PIEZA QUE FALTABA) ---
+@app.post("/add", response_class=RedirectResponse)
+async def agregar_equipo(hostname: str = Form(...), mac: str = Form(...), ip: str = Form(...)):
+    """ Recibe los datos del formulario y los añade a la 'base de datos' en memoria. """
+    new_id = max(e["id"] for e in EQUIPOS_DB) + 1 if EQUIPOS_DB else 1
+    nuevo_equipo = {
+        "id": new_id,
+        "hostname": hostname,
+        "mac": mac,
+        "ip": ip,
+        "estado": "Añadido",
+        "conectado": False,
+        "error": None
+    }
+    EQUIPOS_DB.append(nuevo_equipo)
+    # Redirige al usuario de vuelta a la página principal para que vea la lista actualizada.
+    return RedirectResponse(url="/", status_code=303)
 
 # --- Endpoints de la API y WebSockets ---
 
@@ -63,19 +82,11 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.get("/api/equipos", response_class=JSONResponse)
 def get_equipos_api():
-    """
-    Devuelve datos de equipos. Para la demo en Render, usamos datos quemados
-    para no depender de una base de datos externa, haciendo la demo más robusta.
-    """
-    return [
-        {"id": 1, "hostname": "PC-SALA-01", "ip": "192.168.1.50"},
-        {"id": 2, "hostname": "PC-SALA-02", "ip": "192.168.1.51"},
-        {"id": 3, "hostname": "SERVIDOR-PROY", "ip": "192.168.1.52"},
-    ]
+    """ La API ahora lee de la 'base de datos' en memoria. """
+    return EQUIPOS_DB
 
 @app.get("/actions/simulate-attack/{ip}")
 async def simulate_attack(ip: str):
-    """ Dispara la alerta a todos los clientes conectados. """
     await manager.broadcast({"type": "attack", "ip": ip})
     return {"status": "attack signal sent"}
 
