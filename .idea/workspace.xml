@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae8578b1-d675-4724-a0dc-915b5a3c6391" name="Changes" comment="arreglando rutas de nuevo nuevo">
+    <list default="true" id="ae8578b1-d675-4724-a0dc-915b5a3c6391" name="Changes" comment="supuesto">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/render_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/render_server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -150,7 +151,39 @@
       <option name="project" value="LOCAL" />
       <updated>1765851698175</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="final">
+      <option name="closed" value="true" />
+      <created>1765852016476</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1765852016476</updated>
+    </task>
+    <task id="LOCAL-00012" summary="final">
+      <option name="closed" value="true" />
+      <created>1765852373093</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1765852373093</updated>
+    </task>
+    <task id="LOCAL-00013" summary="final">
+      <option name="closed" value="true" />
+      <created>1765852620472</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1765852620472</updated>
+    </task>
+    <task id="LOCAL-00014" summary="supuesto">
+      <option name="closed" value="true" />
+      <created>1765853649452</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1765853649452</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -159,6 +192,8 @@
     <MESSAGE value="arreglando rutas" />
     <MESSAGE value="arreglando rutas de nuevo" />
     <MESSAGE value="arreglando rutas de nuevo nuevo" />
-    <option name="LAST_COMMIT_MESSAGE" value="arreglando rutas de nuevo nuevo" />
+    <MESSAGE value="final" />
+    <MESSAGE value="supuesto" />
+    <option name="LAST_COMMIT_MESSAGE" value="supuesto" />
   </component>
 </project>
