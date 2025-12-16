@@ -9,7 +9,7 @@ DB_CONFIG = {
     'password': '',
     'host': '127.0.0.1',
     'port': 3306,
-    'database': 'administrator_system1'
+    'database': 'administrator_system'
 }
 
 def get_db_connection():

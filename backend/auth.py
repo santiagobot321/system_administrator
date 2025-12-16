@@ -7,7 +7,11 @@ from passlib.context import CryptContext
 # - `deprecated="auto"`: Automatically handles deprecated hash formats. If you were to add a new,
 #   stronger algorithm in the future (e.g., argon2), `verify` would still work with old bcrypt
 #   hashes, and `hash` would use the new algorithm.
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+pwd_context = CryptContext(
+    schemes=["argon2"],
+    deprecated="auto"
+)
 
 def verify_password(plain_password, hashed_password):
     """

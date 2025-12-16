@@ -3,26 +3,44 @@
 # Salir si hay errores
 set -e
 
-echo "🔧 Instalando dependencias del sistema..."
-sudo apt update
-sudo apt install -y python3.12-venv python3.12-dev libmariadb-dev mariadb-server mariadb-client
+echo "🔧 Instalando dependencias del sistema (Arch)..."
+sudo pacman -Syu --noconfirm \
+    python \
+    python-pip \
+    python-virtualenv \
+    mariadb \
+    mariadb-clients \
+    gcc \
+    base-devel
 
 echo "📦 Creando y activando entorno virtual..."
-python3.12 -m venv venv
+python -m venv venv
 source venv/bin/activate
 
 echo "🐍 Instalando dependencias de Python..."
 pip install --upgrade pip
-pip install fastapi uvicorn[standard] jinja2 python-multipart passlib[bcrypt] itsdangerous mariadb sqlalchemy
-
-echo "✅ Dependencias instaladas."
+pip install \
+    fastapi \
+    uvicorn[standard] \
+    jinja2 \
+    python-multipart \
+    passlib[bcrypt] \
+    itsdangerous \
+    mariadb \
+    sqlalchemy
 
 echo "⚙️ Configurando MariaDB..."
-sudo systemctl start mariadb
+
+# Inicializar data directory solo si no existe
+if [ ! -d "/var/lib/mysql/mysql" ]; then
+    sudo mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+fi
+
 sudo systemctl enable mariadb
+sudo systemctl start mariadb
 
 echo "📂 Creando base de datos y tablas..."
-sudo mariadb -u root <<EOF
+sudo mariadb <<EOF
 CREATE DATABASE IF NOT EXISTS administrator_system;
 USE administrator_system;
 
@@ -44,7 +62,7 @@ CREATE TABLE IF NOT EXISTS users (
 EOF
 
 echo "👤 Creando usuario administrador..."
-python3 tools/create_admin.py
+python tools/create_admin.py
 
 echo "🚀 Iniciando servidor de desarrollo..."
-uvicorn backend.main:app --reload
+uvicorn backend.main:app --host 0.0.0.0 --reload

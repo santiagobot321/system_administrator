@@ -1,0 +1,10 @@
+# Dependencias del agente
+scapy
+requests
+
+# Dependencias del servidor web y despliegue
+fastapi
+uvicorn[standard]
+jinja2
+gunicorn
+websockets
