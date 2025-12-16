@@ -6,8 +6,6 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from typing import List
 
 # --- 1. "Base de Datos" en Memoria ---
-# Esta lista actuará como nuestra base de datos para la demo.
-# Comienza con los datos quemados, pero ahora podemos añadirle más.
 EQUIPOS_DB = [
     {"id": 1, "hostname": "PC-SALA-01", "ip": "192.168.1.50", "mac": "00:1A:2B:3C:4D:5E", "estado": "Desconocido", "conectado": False, "error": None},
     {"id": 2, "hostname": "PC-SALA-02", "ip": "192.168.1.51", "mac": "00:1A:2B:3C:4D:5F", "estado": "Desconocido", "conectado": False, "error": None},
@@ -51,8 +49,8 @@ def get_attacker_console(request: Request):
     """ Sirve el panel del atacante. """
     return templates.TemplateResponse("attacker.html", {"request": request})
 
-# --- 2. Endpoint POST para Agregar Equipos (LA PIEZA QUE FALTABA) ---
-@app.post("/add", response_class=RedirectResponse)
+# --- 2. Endpoint POST para Agregar Equipos (RUTA CORREGIDA) ---
+@app.post("/equipos/add", response_class=RedirectResponse)
 async def agregar_equipo(hostname: str = Form(...), mac: str = Form(...), ip: str = Form(...)):
     """ Recibe los datos del formulario y los añade a la 'base de datos' en memoria. """
     new_id = max(e["id"] for e in EQUIPOS_DB) + 1 if EQUIPOS_DB else 1
@@ -66,7 +64,6 @@ async def agregar_equipo(hostname: str = Form(...), mac: str = Form(...), ip: st
         "error": None
     }
     EQUIPOS_DB.append(nuevo_equipo)
-    # Redirige al usuario de vuelta a la página principal para que vea la lista actualizada.
     return RedirectResponse(url="/", status_code=303)
 
 # --- Endpoints de la API y WebSockets ---
@@ -82,7 +79,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.get("/api/equipos", response_class=JSONResponse)
 def get_equipos_api():
-    """ La API ahora lee de la 'base de datos' en memoria. """
     return EQUIPOS_DB
 
 @app.get("/actions/simulate-attack/{ip}")

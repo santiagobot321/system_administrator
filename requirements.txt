@@ -8,3 +8,4 @@ uvicorn[standard]
 jinja2
 gunicorn
 websockets
+python-multipart
