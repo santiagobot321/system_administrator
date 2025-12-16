@@ -38,12 +38,17 @@ templates = Jinja2Templates(directory="frontend/templates")
 @app.get("/", response_class=HTMLResponse)
 def get_attacker_console(request: Request):
     """ Sirve el panel del atacante como página principal para la demo. """
-    return templates.TemplateResponse("attacker.html", {"request": request})
+    return templates.TemplateResponse("base.html", {"request": request})
 
 @app.get("/attendee", response_class=HTMLResponse)
 async def get_attendee_page(request: Request):
     """ Sirve la página para los móviles de los asistentes. """
     return templates.TemplateResponse("attendee.html", {"request": request})
+
+@app.get("/attack", response_class=HTMLResponse)
+def get_attacker_console(request: Request):
+    """ Sirve el panel del atacante como página principal para la demo. """
+    return templates.TemplateResponse("attacker.html", {"request": request})
 
 # --- Endpoints de la API y WebSockets ---
 
